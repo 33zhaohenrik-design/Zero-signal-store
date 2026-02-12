@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZERO SIGNAL | CHECKOUT</title>
+    <style>
+        /* Minimalist Screamo Aesthetic */
+        body { 
+            background: #000; 
+            color: #fff; 
+            font-family: 'Arial Black', sans-serif; 
+            padding: 50px 20px; 
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .checkout-box { 
+            max-width: 500px; 
+            margin: 0 auto; 
+            border: 5px solid #ff007f; 
+            padding: 30px; 
+        }
+
+        h1 { 
+            font-size: 3rem; 
+            margin: 0 0 20px 0; 
+            letter-spacing: -2px;
+            color: #ff007f;
+        }
+
+        .item-row { 
+            display: flex; 
+            justify-content: space-between; 
+            border-bottom: 2px solid #222; 
+            padding: 15px 0;
+            font-size: 1.2rem;
+        }
+
+        .total-area { 
+            font-size: 2.5rem; 
+            margin: 30px 0; 
+            text-align: right; 
+            color: #00ff88; 
+        }
+
+        /* Buttons */
+        .btn-pay { 
+            background: #ff007f; 
+            color: #000; 
+            border: none; 
+            width: 100%; 
+            padding: 20px; 
+            font-weight: bold; 
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            margin-bottom: 10px;
+        }
+
+        .btn-pay:hover { background: #fff; }
+
+        .btn-clear { 
+            background: none; 
+            color: #444; 
+            border: none; 
+            cursor: pointer; 
+            text-decoration: underline;
+            width: 100%;
+        }
+
+        .back-link { 
+            display: block; 
+            margin-top: 20px; 
+            color: #888; 
+            text-decoration: none; 
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="checkout-box">
+        <h1>CHECK OUT</h1>
+        
+        <div id="cart-items">
+            </div>
+
+        <div class="total-area">
+            TOTAL: $<span id="total-price">0</span>
+        </div>
+
+        <button class="btn-pay" onclick="pay()">CHECK OUT</button>
+        <button class="btn-clear" onclick="empty()">EMPTY CART</button>
+        
+        <a href="index.html" class="back-link">← BACK TO STORE</a>
+    </div>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('zeroSignalCart')) || [];
+        let total = 0;
+        const list = document.getElementById('cart-items');
+
+        if (cart.length === 0) {
+            list.innerHTML = "<p>YOUR PIT IS EMPTY.</p>";
+        } else {
+            cart.forEach(item => {
+                total += item.price;
+                list.innerHTML += `
+                    <div class="item-row">
+                        <span>${item.name}</span>
+                        <span>$${item.price}</span>
+                    </div>`;
+            });
+        }
+        document.getElementById('total-price').innerText = total;
+
+        function empty() {
+            localStorage.removeItem('zeroSignalCart');
+            location.reload();
+        }
+
+        function pay() {
+            if(total === 0) return;
+            // This is the link to send them to the payment
+            window.location.href = "https://www.paypal.me/YourParentAccount/" + total;
+        }
+    </script>
+</body>
+</html>

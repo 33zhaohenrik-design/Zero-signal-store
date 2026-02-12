@@ -1,0 +1,135 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZERO SIGNAL | OFFICIAL SHOP</title>
+    <style>
+        :root { --pink: #ff007f; --black: #000; --grey: #1a1a1a; }
+        body { background: var(--black); color: white; font-family: 'Arial Black', sans-serif; margin: 0; }
+
+        /* THE DISAPPEARING BANNER */
+        #hero-banner {
+            height: 70vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('band-photo.jpg');
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+            border-bottom: 6px solid var(--pink);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        #hero-banner h1 { font-size: clamp(2rem, 10vw, 7rem); text-shadow: 0 0 20px var(--pink); letter-spacing: -3px; }
+
+        /* BANNER HIDE CLASS */
+        .banner-hidden { opacity: 0; transform: translateY(-50px); pointer-events: none; height: 0 !important; overflow: hidden; }
+
+        /* STICKY NAV */
+        nav { 
+            background: #111; padding: 15px 30px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #333; 
+        }
+        .cart-link { background: var(--pink); color: black; padding: 10px 20px; text-decoration: none; font-weight: bold; }
+
+        /* STORE LAYOUT */
+        .container { display: flex; max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        .sidebar { width: 220px; position: sticky; top: 100px; height: fit-content; border-right: 1px solid #333; padding-right: 20px; }
+        .sidebar h4 { color: var(--pink); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px; }
+        .filter-btn { display: block; background: none; border: none; color: #666; cursor: pointer; padding: 10px 0; font-family: inherit; text-align: left; width: 100%; text-transform: uppercase; }
+        .filter-btn:hover { color: white; }
+
+        .grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; padding-left: 30px; }
+        .product-card { background: var(--grey); border: 1px solid #222; padding: 15px; text-align: center; }
+        .product-card img { width: 100%; aspect-ratio: 1/1; object-fit: cover; margin-bottom: 10px; filter: grayscale(50%); }
+        .price { color: var(--pink); font-size: 1.2rem; display: block; margin-bottom: 10px; }
+        .add-btn { background: white; color: black; border: none; width: 100%; padding: 10px; font-weight: bold; cursor: pointer; }
+        .add-btn:hover { background: var(--pink); color: white; }
+
+        @media (max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; position: relative; top: 0; }
+            .grid { padding-left: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <span style="letter-spacing: 2px; font-size: 0.8rem;">ZERO SIGNAL // SCREAMO</span>
+        <a href="checkout.html" class="cart-link">CART (<span id="cart-count">0</span>)</a>
+    </nav>
+
+    <div id="hero-banner">
+        <h1>ZERO SIGNAL STORE</h1>
+    </div>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h4>Filter Items</h4>
+            <button class="filter-btn" onclick="filterItems('all')">View All</button>
+            <button class="filter-btn" onclick="filterItems('apparel')">Apparel</button>
+            <button class="filter-btn" onclick="filterItems('music')">Music</button>
+            <button class="filter-btn" onclick="filterItems('misc')">Accessories</button>
+            <h4>Price Finder</h4>
+            <button class="filter-btn" onclick="filterPrice(15)">Under $15</button>
+            <button class="filter-btn" onclick="filterPrice(100)">Under $100</button>
+        </aside>
+
+        <main class="grid" id="product-grid">
+            </main>
+    </div>
+
+    <script>
+        // 1. SCROLL EFFECT: Banner disappears
+        window.onscroll = function() {
+            let banner = document.getElementById("hero-banner");
+            if (window.scrollY > 300) {
+                banner.classList.add("banner-hidden");
+            } else {
+                banner.classList.remove("banner-hidden");
+            }
+        };
+
+        // 2. GENERATE 100 ITEMS FOR TESTING
+        const grid = document.getElementById('product-grid');
+        const types = ['apparel', 'music', 'misc'];
+        const names = ['Logo Tee', 'Demo Tape', 'Screamo Pin', 'Tour Poster', 'Pink Bird Hoodie'];
+
+        for (let i = 1; i <= 100; i++) {
+            let type = types[Math.floor(Math.random() * types.length)];
+            let name = names[Math.floor(Math.random() * names.length)] + " #" + i;
+            let price = Math.floor(Math.random() * 45) + 5;
+            
+            grid.innerHTML += `
+                <div class="product-card" data-category="${type}" data-price="${price}">
+                    <img src="shirt.jpg" alt="Item">
+                    <h3>${name}</h3>
+                    <span class="price">$${price}.00</span>
+                    <button class="add-btn" onclick="addToCart('${name}', ${price})">Add to Pit</button>
+                </div>
+            `;
+        }
+
+        // 3. CART LOGIC
+        let cart = JSON.parse(localStorage.getItem('zeroSignalCart')) || [];
+        document.getElementById('cart-count').innerText = cart.length;
+
+        function addToCart(name, price) {
+            cart.push({name, price});
+            localStorage.setItem('zeroSignalCart', JSON.stringify(cart));
+            document.getElementById('cart-count').innerText = cart.length;
+        }
+
+        function filterItems(cat) {
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.style.display = (cat === 'all' || card.dataset.category === cat) ? "block" : "none";
+            });
+        }
+
+        function filterPrice(max) {
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.style.display = (parseInt(card.dataset.price) <= max) ? "block" : "none";
+            });
+        }
+    </script>
+</body>
+</html>
